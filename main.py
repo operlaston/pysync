@@ -1,5 +1,6 @@
 import argparse
 import scanner
+import synchronizer
 
 def main():
     parser = argparse.ArgumentParser(description="pysync")
@@ -9,13 +10,17 @@ def main():
     parser.add_argument('--log-file', '-l', type=str)
 
     args = parser.parse_args()
-    file_hashes = scanner.scan_and_hash(args.source)
-    if not file_hashes:
-        print("directory not found")
-        return
+    source_hashes = scanner.scan_and_hash(args.source)
+    replica_hashes = scanner.scan_and_hash(args.replica)
 
-    for file_path, hashcode in file_hashes.items():
-        print(f"file path: {file_path}, hashcode: {hashcode}")
+    synchronizer.sync_dirs(source_hashes, replica_hashes, args.source, args.replica)
+
+    # if not file_hashes:
+    #     print("directory not found")
+    #     return
+    #
+    # for file_path, hashcode in file_hashes.items():
+    #     print(f"file path: {file_path}, hashcode: {hashcode}")
 
 if __name__ == "__main__":
     main()

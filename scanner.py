@@ -14,7 +14,7 @@ def scan_and_hash(directory):
 
     for filepath in dir_path.rglob('*'):
         if filepath.is_file():
-            file_hashes[str(filepath)] = hash_file(filepath)
+            file_hashes[str(filepath.relative_to(dir_path))] = hash_file(filepath)
 
     return file_hashes
 
@@ -24,6 +24,8 @@ hash a file using the md5 algorithm on its contents
 """
 def hash_file(filepath):
     md5 = hashlib.md5()
-    fpathbytes = bytes(filepath)
-    md5.update(fpathbytes)
-    return md5.hexdigest()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(8192):
+            md5.update(chunk)
+    return md5.digest()
+    # return md5.hexdigest()
